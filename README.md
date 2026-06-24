@@ -5,4 +5,4 @@ return mapStringToIntegerOfObjectForKeys(results, 'quantityMetricUnit')
 
 ### How to Run
 
-1. Generate Assets from .aseprite files. Aseprite executable must be present in PATH. 
+1. Generate Assets from .aseprite files. Aseprite executable must be present in PATH. run ./generateAssets.sh to put PNG and data files into the assets folder. 
