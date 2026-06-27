@@ -3,6 +3,7 @@ package Game
 import "core:log"
 import "vendor:raylib"
 import "src/entity"
+import "src/resourceManager"
 
 main :: proc() {
   //setup logging
