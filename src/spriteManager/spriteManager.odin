@@ -63,11 +63,11 @@ init :: proc(manager: ^SpriteManager) -> bool {
 		manager.sprite_handles[sprite].atlas_index = -1
 	}
 
-	_load_directory(manager, fmt.tprintf("%s/assets", exe_dir))
+	_loadDirectory(manager, fmt.tprintf("%s/assets", exe_dir))
 	return true
 }
 
-_load_directory :: proc(manager: ^SpriteManager, dir_path: string) {
+_loadDirectory :: proc(manager: ^SpriteManager, dir_path: string) {
 	files, err := os.read_directory_by_path(dir_path, 0, context.temp_allocator)
 	if err != nil {
 		log.error("Failed to read directory:", dir_path)
@@ -79,24 +79,24 @@ _load_directory :: proc(manager: ^SpriteManager, dir_path: string) {
 
 	for file in files {
 		if file.type == .Regular && strings.has_suffix(file.name, ".json") {
-			_parse_json(file.fullpath, dir_path, &entries)
+			_parseJson(file.fullpath, dir_path, &entries)
 		}
 	}
 
 	if len(entries) > 0 {
-		_build_atlas(manager, entries[:])
+		_buildAtlas(manager, entries[:])
 	}
 
 	for file in files {
 		if file.type == .Directory {
-			_load_directory(manager, file.fullpath)
+			_loadDirectory(manager, file.fullpath)
 		}
 	}
 }
 
-_parse_json :: proc(json_path: string, dir_path: string, entries: ^[dynamic]_SpriteEntry) {
+_parseJson :: proc(json_path: string, dir_path: string, entries: ^[dynamic]_SpriteEntry) {
 	data, ok := os.read_entire_file(json_path, context.temp_allocator)
-	if !ok {
+	if ok != nil {
 		log.error("Failed to read:", json_path)
 		return
 	}
@@ -120,7 +120,7 @@ _parse_json :: proc(json_path: string, dir_path: string, entries: ^[dynamic]_Spr
 	})
 }
 
-_build_atlas :: proc(manager: ^SpriteManager, entries: []_SpriteEntry) {
+_buildAtlas :: proc(manager: ^SpriteManager, entries: []_SpriteEntry) {
 	// stb rect_pack needs at least ATLAS_SIZE nodes for optimal results
 	nodes := make([]stbrp.Node, ATLAS_SIZE, context.temp_allocator)
 	rects := make([]stbrp.Rect, len(entries), context.temp_allocator)
@@ -154,13 +154,13 @@ _build_atlas :: proc(manager: ^SpriteManager, entries: []_SpriteEntry) {
 		dst_rect := raylib.Rectangle{f32(rect.x), f32(rect.y), f32(e.w), f32(e.h)}
 		raylib.ImageDraw(&atlas_img, sprite_img, src_rect, dst_rect, raylib.WHITE)
 		raylib.UnloadImage(sprite_img)
-		_map_sprite(manager, e.name, atlas_index, dst_rect)
+		_mapSprite(manager, e.name, atlas_index, dst_rect)
 	}
 
 	append(&manager.atlases, raylib.LoadTextureFromImage(atlas_img))
 }
 
-_map_sprite :: proc(manager: ^SpriteManager, name: string, atlas_index: int, rect: raylib.Rectangle) {
+_mapSprite :: proc(manager: ^SpriteManager, name: string, atlas_index: int, rect: raylib.Rectangle) {
 	for sprite in Sprite {
 		if strings.equal_fold(fmt.tprintf("%v", sprite), name) {
 			manager.sprite_handles[sprite] = SpriteHandle{
@@ -173,11 +173,11 @@ _map_sprite :: proc(manager: ^SpriteManager, name: string, atlas_index: int, rec
 	log.warn("No Sprite enum value for:", name)
 }
 
-get_handle :: proc(manager: ^SpriteManager, sprite: Sprite) -> SpriteHandle {
+getHandle :: proc(manager: ^SpriteManager, sprite: Sprite) -> SpriteHandle {
 	return manager.sprite_handles[sprite]
 }
 
-draw_sprite :: proc(manager: ^SpriteManager, handle: SpriteHandle, x, y: f32) {
+drawSprite :: proc(manager: ^SpriteManager, handle: SpriteHandle, x, y: f32) {
 	if handle.atlas_index < 0 || handle.atlas_index >= len(manager.atlases) {
 		return
 	}
