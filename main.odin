@@ -16,19 +16,18 @@ main :: proc() {
   windowHeight :: 1080
   Ray.InitWindow(windowWidth, windowHeight, "Game Window")
 
+  defer Ray.CloseWindow()
+  
+  spriteManager : SpriteManager.SpriteManager
+  
+  SpriteManager.init(&spriteManager) // No need to unload, it'll happen when the program closes. 
+  
   player := Entity.Entity {
+    textureId = SpriteManager.getHandle(&spriteManager, .Player),
     x = 0,
     y = 0
   }
-
-  defer Ray.CloseWindow()
-
-  spriteManager : SpriteManager.SpriteManager
-
-  SpriteManager.init(&spriteManager) // No need to unload, it'll happen when the program closes. 
-
-  playerHandle := SpriteManager.getHandle(&spriteManager, .Player)
-
+  
   for (!Ray.WindowShouldClose()){
 
     Ray.BeginDrawing()
@@ -37,7 +36,7 @@ main :: proc() {
 
     Ray.DrawText("Hello", 25, 25, 20, Ray.WHITE)
 
-    SpriteManager.drawSprite(&spriteManager, playerHandle, 100, 100)
+    SpriteManager.drawSprite(&spriteManager, player.textureId, 100, 100)
 
     Ray.EndDrawing()
   }
