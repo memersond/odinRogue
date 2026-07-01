@@ -2,7 +2,7 @@ package InputManager
 
 import "vendor:raylib"
 
-Action :: enum {
+InputAction :: enum {
 	MoveUp,
 	MoveDown,
 	MoveLeft,
@@ -26,8 +26,8 @@ InputSource :: union {
 }
 
 InputManager :: struct {
-	bindings:     [Action]InputSource,
-	states:       [Action]KeyState,
+	bindings:     [InputAction]InputSource,
+	states:       [InputAction]KeyState,
 	mouse_pos:    raylib.Vector2,
 	mouse_delta:  raylib.Vector2,
 	mouse_scroll: f32,
@@ -48,7 +48,7 @@ update :: proc(im: ^InputManager) {
 	im.mouse_delta  = raylib.GetMouseDelta()
 	im.mouse_scroll = raylib.GetMouseWheelMove()
 
-	for action in Action {
+	for action in InputAction {
 		source := im.bindings[action]
 		switch s in source {
 		case raylib.KeyboardKey:
@@ -71,25 +71,25 @@ update :: proc(im: ^InputManager) {
 	}
 }
 
-rebind :: proc(im: ^InputManager, action: Action, source: InputSource) {
+rebind :: proc(im: ^InputManager, action: InputAction, source: InputSource) {
 	im.bindings[action] = source
 }
 
-isPressed :: proc(im: ^InputManager, action: Action) -> bool {
+isPressed :: proc(im: ^InputManager, action: InputAction) -> bool {
 	return im.states[action] == .Pressed
 }
 
 // True on the frame pressed and while held
-isDown :: proc(im: ^InputManager, action: Action) -> bool {
+isDown :: proc(im: ^InputManager, action: InputAction) -> bool {
 	state := im.states[action]
 	return state == .Down || state == .Pressed
 }
 
-isReleased :: proc(im: ^InputManager, action: Action) -> bool {
+isReleased :: proc(im: ^InputManager, action: InputAction) -> bool {
 	return im.states[action] == .Released
 }
 
-isUp :: proc(im: ^InputManager, action: Action) -> bool {
+isUp :: proc(im: ^InputManager, action: InputAction) -> bool {
 	state := im.states[action]
 	return state == .Up || state == .Released
 }
