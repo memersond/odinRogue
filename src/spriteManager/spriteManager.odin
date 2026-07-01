@@ -150,17 +150,30 @@ _buildAtlas :: proc(manager: ^SpriteManager, entries: []_SpriteEntry) {
 
 	atlas_index := len(manager.atlases)
 
+	loaded_images: map[string]raylib.Image
+	defer {
+		for _, img in loaded_images {
+			raylib.UnloadImage(img)
+		}
+		delete(loaded_images)
+	}
+
 	for rect in rects {
 		if !rect.was_packed {
 			log.warn("Sprite did not fit in atlas:", entries[rect.id].name)
 			continue
 		}
 		e := entries[rect.id]
-		sprite_img := raylib.LoadImage(strings.clone_to_cstring(e.png_path, context.temp_allocator))
+
+		sprite_img, ok := loaded_images[e.png_path]
+		if !ok {
+			sprite_img = raylib.LoadImage(strings.clone_to_cstring(e.png_path, context.temp_allocator))
+			loaded_images[e.png_path] = sprite_img
+		}
+
 		src_rect := raylib.Rectangle{f32(e.srcX), f32(e.srcY), f32(e.w), f32(e.h)}
 		dst_rect := raylib.Rectangle{f32(rect.x), f32(rect.y), f32(e.w), f32(e.h)}
 		raylib.ImageDraw(&atlas_img, sprite_img, src_rect, dst_rect, raylib.WHITE)
-		raylib.UnloadImage(sprite_img)
 		_mapSprite(manager, e.name, atlas_index, dst_rect)
 	}
 
