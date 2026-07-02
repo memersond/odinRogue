@@ -6,6 +6,7 @@ import Entity "src/entity"
 import SpriteManager "src/spriteManager"
 import InputManager "src/inputManager"
 import Action "src/action"
+import Map "src/map"
 
 main :: proc() {
   //setup logging
@@ -27,9 +28,21 @@ main :: proc() {
   SpriteManager.init(&spriteManager) // No need to unload, it'll happen when the program closes. 
   
   player := Entity.Entity {
-    textureId = SpriteManager.getHandle(&spriteManager, .Player),
+    textureId = SpriteManager.getHandle(&spriteManager, .PLAYER),
     x = 0,
     y = 0
+  }
+
+  MAP_WIDTH :: 50
+  MAP_HEIGHT :: 50
+
+  gameMap := Map.init(&spriteManager, MAP_WIDTH, MAP_HEIGHT, .GRASS)
+  defer Map.cleanup(&gameMap)
+
+  centerX := MAP_WIDTH / 2
+  centerY := MAP_HEIGHT / 2
+  for x in centerX - 2 ..< centerX + 2 {
+    Map.setTile(&gameMap, &spriteManager, x, centerY, .WALL)
   }
 
   inputManager : InputManager.InputManager
@@ -71,6 +84,7 @@ main :: proc() {
     Ray.ClearBackground(Ray.BLACK)
 
     Ray.BeginMode2D(camera)
+    Map.draw(&gameMap, &spriteManager)
     SpriteManager.drawSprite(&spriteManager, player.textureId, f32(player.x), f32(player.y))
     Ray.EndMode2D()
 

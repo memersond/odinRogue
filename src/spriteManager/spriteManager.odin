@@ -11,10 +11,10 @@ import "core:encoding/json"
 ATLAS_SIZE :: 1024
 
 Sprite :: enum {
-	Unknown,
-	Grass,
-	Wall,
-	Player,
+	UNKNOWN,
+	GRASS,
+	WALL,
+	PLAYER,
 }
 
 // Resolved sprite location — store this on entities instead of the enum.
