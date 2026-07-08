@@ -36,7 +36,7 @@ main :: proc() {
   MAP_WIDTH :: 50
   MAP_HEIGHT :: 50
 
-  gameMap := Map.init(&spriteManager, MAP_WIDTH, MAP_HEIGHT, .GRASS)
+  gameMap := Map.init(&spriteManager, MAP_WIDTH, MAP_HEIGHT, .GRASS, &player)
   defer Map.cleanup(&gameMap)
 
   centerX := MAP_WIDTH / 2
@@ -67,16 +67,16 @@ main :: proc() {
     camera.zoom = clamp(camera.zoom, ZOOM_MIN, ZOOM_MAX)
 
     if InputManager.isPressed(&inputManager, .MoveUp) {
-      Action.execute(Action.Movement{entity = &player, dx = 0, dy = -1})
+      Action.execute(Action.Movement{entity = &player, dx = 0, dy = -1, gameMap = &gameMap})
     }
     if InputManager.isPressed(&inputManager, .MoveDown) {
-      Action.execute(Action.Movement{entity = &player, dx = 0, dy = 1})
+      Action.execute(Action.Movement{entity = &player, dx = 0, dy = 1, gameMap = &gameMap})
     }
     if InputManager.isPressed(&inputManager, .MoveLeft) {
-      Action.execute(Action.Movement{entity = &player, dx = -1, dy = 0})
+      Action.execute(Action.Movement{entity = &player, dx = -1, dy = 0, gameMap = &gameMap})
     }
     if InputManager.isPressed(&inputManager, .MoveRight) {
-      Action.execute(Action.Movement{entity = &player, dx = 1, dy = 0})
+      Action.execute(Action.Movement{entity = &player, dx = 1, dy = 0, gameMap = &gameMap})
     }
 
     Ray.BeginDrawing()
@@ -85,10 +85,7 @@ main :: proc() {
 
     Ray.BeginMode2D(camera)
     Map.draw(&gameMap, &spriteManager)
-    SpriteManager.drawSprite(&spriteManager, player.textureId, f32(player.x), f32(player.y))
     Ray.EndMode2D()
-
-    Ray.DrawText("Hello", 25, 25, 20, Ray.WHITE)
 
     Ray.EndDrawing()
   }

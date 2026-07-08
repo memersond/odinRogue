@@ -1,14 +1,17 @@
 package Action
 
 import Entity "../entity"
+import Map "../map"
+import Log "core:log"
 
 ActionBase :: struct {
 	entity: ^Entity.Entity,
 }
 
-Movement :: struct {
+Movement :: struct #all_or_none {
 	using base: ActionBase,
 	dx, dy: int,
+	gameMap: ^Map.Map
 }
 
 Action :: union {
@@ -23,6 +26,17 @@ execute :: proc(action: Action) {
 }
 
 _executeMovement :: proc(m: Movement) {
+	
+	tileIsSolid, foundTile := Map.isTileSoild(m.gameMap, m.entity.x + m.dx, m.entity.y + m.dy)
+
+	if(!foundTile){
+		Log.debug("Could not find if tile was solid")
+	}
+	
+	if(tileIsSolid){
+		return
+	}
+
 	m.entity.x += m.dx
 	m.entity.y += m.dy
 }
