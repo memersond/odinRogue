@@ -67,16 +67,16 @@ main :: proc() {
     camera.zoom = clamp(camera.zoom, ZOOM_MIN, ZOOM_MAX)
 
     if InputManager.isPressed(&inputManager, .MoveUp) {
-      Action.execute(Action.Movement{entity = &player, dx = 0, dy = -1, gameMap = &gameMap})
+      Action.execute(Action.Movement{base = Action.ActionBase{entity = &player}, dx = 0, dy = -1, gameMap = &gameMap})
     }
     if InputManager.isPressed(&inputManager, .MoveDown) {
-      Action.execute(Action.Movement{entity = &player, dx = 0, dy = 1, gameMap = &gameMap})
+      Action.execute(Action.Movement{base = Action.ActionBase{entity = &player}, dx = 0, dy = 1, gameMap = &gameMap})
     }
     if InputManager.isPressed(&inputManager, .MoveLeft) {
-      Action.execute(Action.Movement{entity = &player, dx = -1, dy = 0, gameMap = &gameMap})
+      Action.execute(Action.Movement{base = Action.ActionBase{entity = &player}, dx = -1, dy = 0, gameMap = &gameMap})
     }
     if InputManager.isPressed(&inputManager, .MoveRight) {
-      Action.execute(Action.Movement{entity = &player, dx = 1, dy = 0, gameMap = &gameMap})
+      Action.execute(Action.Movement{base = Action.ActionBase{entity = &player}, dx = 1, dy = 0, gameMap = &gameMap})
     }
 
     Ray.BeginDrawing()
