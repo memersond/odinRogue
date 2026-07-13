@@ -66,16 +66,16 @@ main :: proc() {
     camera.zoom += inputManager.mouse_scroll * ZOOM_STEP
     camera.zoom = clamp(camera.zoom, ZOOM_MIN, ZOOM_MAX)
 
-    if InputManager.isPressed(&inputManager, .MoveUp) {
+    if InputManager.isTriggered(&inputManager, .MoveUp) {
       Action.execute(Action.Movement{base = Action.ActionBase{entity = &player}, dx = 0, dy = -1, gameMap = &gameMap})
     }
-    if InputManager.isPressed(&inputManager, .MoveDown) {
+    if InputManager.isTriggered(&inputManager, .MoveDown) {
       Action.execute(Action.Movement{base = Action.ActionBase{entity = &player}, dx = 0, dy = 1, gameMap = &gameMap})
     }
-    if InputManager.isPressed(&inputManager, .MoveLeft) {
+    if InputManager.isTriggered(&inputManager, .MoveLeft) {
       Action.execute(Action.Movement{base = Action.ActionBase{entity = &player}, dx = -1, dy = 0, gameMap = &gameMap})
     }
-    if InputManager.isPressed(&inputManager, .MoveRight) {
+    if InputManager.isTriggered(&inputManager, .MoveRight) {
       Action.execute(Action.Movement{base = Action.ActionBase{entity = &player}, dx = 1, dy = 0, gameMap = &gameMap})
     }
 
