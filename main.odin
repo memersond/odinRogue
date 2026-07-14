@@ -59,7 +59,18 @@ main :: proc() {
     zoom     = 2.0,
   }
 
+  ANIM_FRAME_DURATION :: 0.15
+  ANIM_TICK_WRAP :: 232792560 // LCM(1..20) - exactly divisible by any realistic frame count
+  animAccumulator : f32 = 0
+  animTick := 0
+
   for (!Ray.WindowShouldClose()){
+
+    animAccumulator += Ray.GetFrameTime()
+    for animAccumulator >= ANIM_FRAME_DURATION {
+      animAccumulator -= ANIM_FRAME_DURATION
+      animTick = (animTick + 1) % ANIM_TICK_WRAP
+    }
 
     InputManager.update(&inputManager)
 
@@ -84,7 +95,7 @@ main :: proc() {
     Ray.ClearBackground(Ray.BLACK)
 
     Ray.BeginMode2D(camera)
-    Map.draw(&gameMap, &spriteManager)
+    Map.draw(&gameMap, &spriteManager, animTick)
     Ray.EndMode2D()
 
     Ray.EndDrawing()

@@ -72,7 +72,7 @@ getTile ::proc(gameMap: ^Map, x: int, y: int) -> (tile: Tile, ok: bool) {
   return gameMap.tiles[x][y], true
 }
 
-draw :: proc(m: ^Map, spriteManager: ^SpriteManager.SpriteManager) {
+draw :: proc(m: ^Map, spriteManager: ^SpriteManager.SpriteManager, animTick: int) {
   for column, x in m.tiles {
     for tile, y in column {
       SpriteManager.drawSprite(spriteManager, tile.textureId, f32(x * TILE_SIZE), f32(y * TILE_SIZE))
@@ -80,10 +80,10 @@ draw :: proc(m: ^Map, spriteManager: ^SpriteManager.SpriteManager) {
   }
 
   for &entity in m.entities {
-    Entity.draw(spriteManager, &entity, TILE_SIZE)
+    Entity.draw(spriteManager, &entity, TILE_SIZE, animTick)
   }
 
-  Entity.draw(spriteManager, m.player, TILE_SIZE)
+  Entity.draw(spriteManager, m.player, TILE_SIZE, animTick)
 }
 
 cleanup :: proc(m: ^Map) {
