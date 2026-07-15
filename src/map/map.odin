@@ -72,6 +72,14 @@ getTile ::proc(gameMap: ^Map, x: int, y: int) -> (tile: Tile, ok: bool) {
   return gameMap.tiles[x][y], true
 }
 
+update :: proc(m: ^Map, dt: f32) {
+  for &entity in m.entities {
+    Entity.update(&entity, dt)
+  }
+
+  Entity.update(m.player, dt)
+}
+
 draw :: proc(m: ^Map, spriteManager: ^SpriteManager.SpriteManager, animTick: int) {
   for column, x in m.tiles {
     for tile, y in column {

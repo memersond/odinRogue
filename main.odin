@@ -27,11 +27,7 @@ main :: proc() {
   
   SpriteManager.init(&spriteManager) // No need to unload, it'll happen when the program closes. 
   
-  player := Entity.Entity {
-    textureId = SpriteManager.getHandle(&spriteManager, .PLAYER),
-    x = 0,
-    y = 0
-  }
+  player := Entity.spawn(0, 0, SpriteManager.getHandle(&spriteManager, .PLAYER))
 
   MAP_WIDTH :: 50
   MAP_HEIGHT :: 50
@@ -66,13 +62,16 @@ main :: proc() {
 
   for (!Ray.WindowShouldClose()){
 
-    animAccumulator += Ray.GetFrameTime()
+    dt := Ray.GetFrameTime()
+
+    animAccumulator += dt
     for animAccumulator >= ANIM_FRAME_DURATION {
       animAccumulator -= ANIM_FRAME_DURATION
       animTick = (animTick + 1) % ANIM_TICK_WRAP
     }
 
     InputManager.update(&inputManager)
+    Map.update(&gameMap, dt)
 
     camera.zoom += inputManager.mouse_scroll * ZOOM_STEP
     camera.zoom = clamp(camera.zoom, ZOOM_MIN, ZOOM_MAX)

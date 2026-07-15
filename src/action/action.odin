@@ -37,6 +37,5 @@ _executeMovement :: proc(m: Movement) {
 		return
 	}
 
-	m.entity.x += m.dx
-	m.entity.y += m.dy
+	Entity.move(m.entity, m.dx, m.dy)
 }
