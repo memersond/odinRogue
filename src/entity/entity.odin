@@ -2,7 +2,7 @@ package Entity
 
 import SpriteManager "../spriteManager"
 
-MOVE_DURATION :: 0.02
+MOVE_DURATION :: 0.03
 
 Entity :: struct {
   x: int,
