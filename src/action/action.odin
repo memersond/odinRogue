@@ -1,11 +1,11 @@
 package Action
 
-import Entity "../entity"
+import World "../world"
 import Map "../map"
 import Log "core:log"
 
 ActionBase :: struct {
-	entity: ^Entity.Entity,
+	entity: World.EntityId,
 }
 
 Movement :: struct #all_or_none {
@@ -26,16 +26,23 @@ execute :: proc(action: Action) {
 }
 
 _executeMovement :: proc(m: Movement) {
-	
-	tileIsSolid, foundTile := Map.isTileSoild(m.gameMap, m.entity.x + m.dx, m.entity.y + m.dy)
+	pos, _ := World.getPosition(&m.gameMap.world, m.entity)
+	targetX := pos.x + m.dx
+	targetY := pos.y + m.dy
+
+	tileIsSolid, foundTile := Map.isTileSoild(m.gameMap, targetX, targetY)
 
 	if(!foundTile){
 		Log.debug("Could not find if tile was solid")
 	}
-	
+
 	if(tileIsSolid){
 		return
 	}
 
-	Entity.move(m.entity, m.dx, m.dy)
+	if(Map.isEntityBlocking(m.gameMap, targetX, targetY)){
+		return
+	}
+
+	World.move(&m.gameMap.world, m.entity, m.dx, m.dy)
 }

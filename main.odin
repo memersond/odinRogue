@@ -2,7 +2,7 @@ package Game
 
 import Log "core:log"
 import Ray "vendor:raylib"
-import Entity "src/entity"
+import World "src/world"
 import SpriteManager "src/spriteManager"
 import InputManager "src/inputManager"
 import Action "src/action"
@@ -27,13 +27,13 @@ main :: proc() {
   
   SpriteManager.init(&spriteManager) // No need to unload, it'll happen when the program closes. 
   
-  player := Entity.spawn(0, 0, SpriteManager.getHandle(&spriteManager, .PLAYER))
-
   MAP_WIDTH :: 50
   MAP_HEIGHT :: 50
 
-  gameMap := Map.init(&spriteManager, MAP_WIDTH, MAP_HEIGHT, .GRASS, &player)
+  gameMap := Map.init(&spriteManager, MAP_WIDTH, MAP_HEIGHT, .GRASS)
   defer Map.cleanup(&gameMap)
+
+  gameMap.player = World.spawnPlayer(&gameMap.world, 0, 0, SpriteManager.getHandle(&spriteManager, .PLAYER))
 
   centerX := MAP_WIDTH / 2
   centerY := MAP_HEIGHT / 2
@@ -77,16 +77,16 @@ main :: proc() {
     camera.zoom = clamp(camera.zoom, ZOOM_MIN, ZOOM_MAX)
 
     if InputManager.isTriggered(&inputManager, .MoveUp) {
-      Action.execute(Action.Movement{base = Action.ActionBase{entity = &player}, dx = 0, dy = -1, gameMap = &gameMap})
+      Action.execute(Action.Movement{base = Action.ActionBase{entity = gameMap.player}, dx = 0, dy = -1, gameMap = &gameMap})
     }
     if InputManager.isTriggered(&inputManager, .MoveDown) {
-      Action.execute(Action.Movement{base = Action.ActionBase{entity = &player}, dx = 0, dy = 1, gameMap = &gameMap})
+      Action.execute(Action.Movement{base = Action.ActionBase{entity = gameMap.player}, dx = 0, dy = 1, gameMap = &gameMap})
     }
     if InputManager.isTriggered(&inputManager, .MoveLeft) {
-      Action.execute(Action.Movement{base = Action.ActionBase{entity = &player}, dx = -1, dy = 0, gameMap = &gameMap})
+      Action.execute(Action.Movement{base = Action.ActionBase{entity = gameMap.player}, dx = -1, dy = 0, gameMap = &gameMap})
     }
     if InputManager.isTriggered(&inputManager, .MoveRight) {
-      Action.execute(Action.Movement{base = Action.ActionBase{entity = &player}, dx = 1, dy = 0, gameMap = &gameMap})
+      Action.execute(Action.Movement{base = Action.ActionBase{entity = gameMap.player}, dx = 1, dy = 0, gameMap = &gameMap})
     }
 
     Ray.BeginDrawing()
