@@ -1,7 +1,7 @@
 package Map
 
 import SpriteManager "../spriteManager"
-import Entity "../entity"
+import World "../world"
 
 TILE_SIZE :: 16
 
@@ -24,8 +24,8 @@ Tile :: struct {
 Map :: struct {
   width, height: int,
   tiles: [dynamic][dynamic]Tile,
-  entities: [dynamic]Entity.Entity,
-  player: ^Entity.Entity
+  world: World.World,
+  player: World.EntityId,
 }
 
 _spriteForType :: proc(tileType: TileType) -> SpriteManager.Sprite {
@@ -36,7 +36,7 @@ _spriteForType :: proc(tileType: TileType) -> SpriteManager.Sprite {
   return .UNKNOWN
 }
 
-init :: proc(spriteManager: ^SpriteManager.SpriteManager, width, height: int, fillType: TileType, player: ^Entity.Entity) -> Map {
+init :: proc(spriteManager: ^SpriteManager.SpriteManager, width, height: int, fillType: TileType) -> Map {
   m: Map
 
   m.width = width
@@ -53,9 +53,6 @@ init :: proc(spriteManager: ^SpriteManager.SpriteManager, width, height: int, fi
     }
   }
 
-  m.entities = make([dynamic]Entity.Entity)
-
-  m.player = player
   return m
 }
 
@@ -73,11 +70,7 @@ getTile ::proc(gameMap: ^Map, x: int, y: int) -> (tile: Tile, ok: bool) {
 }
 
 update :: proc(m: ^Map, dt: f32) {
-  for &entity in m.entities {
-    Entity.update(&entity, dt)
-  }
-
-  Entity.update(m.player, dt)
+  World.updateMovement(&m.world, dt)
 }
 
 draw :: proc(m: ^Map, spriteManager: ^SpriteManager.SpriteManager, animTick: int) {
@@ -87,11 +80,7 @@ draw :: proc(m: ^Map, spriteManager: ^SpriteManager.SpriteManager, animTick: int
     }
   }
 
-  for &entity in m.entities {
-    Entity.draw(spriteManager, &entity, TILE_SIZE, animTick)
-  }
-
-  Entity.draw(spriteManager, m.player, TILE_SIZE, animTick)
+  World.draw(&m.world, spriteManager, TILE_SIZE, animTick)
 }
 
 cleanup :: proc(m: ^Map) {
@@ -99,6 +88,7 @@ cleanup :: proc(m: ^Map) {
     delete(column)
   }
   delete(m.tiles)
+  World.cleanup(&m.world)
 }
 
 isTileSoild :: proc(gameMap: ^Map, x: int, y: int) -> (walkable: bool, ok: bool) {
@@ -109,4 +99,8 @@ isTileSoild :: proc(gameMap: ^Map, x: int, y: int) -> (walkable: bool, ok: bool)
   }
 
   return TileSolidMap[tile.type], true
+}
+
+isEntityBlocking :: proc(gameMap: ^Map, x: int, y: int) -> bool {
+  return World.isBlockedAt(&gameMap.world, x, y)
 }

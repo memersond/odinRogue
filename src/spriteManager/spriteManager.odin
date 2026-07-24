@@ -15,6 +15,9 @@ Sprite :: enum {
 	GRASS,
 	WALL,
 	PLAYER,
+	ENEMY,
+	TREE,
+	TALL_GRASS,
 }
 
 // Resolved sprite location — store this on entities instead of the enum.
